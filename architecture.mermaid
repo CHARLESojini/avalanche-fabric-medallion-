@@ -1,0 +1,54 @@
+flowchart TD
+    A1[📁 order-history.csv\nGoogle Drive] --> B
+    A2[📁 shipping-logs.csv\nGoogle Drive] --> B
+
+    B[🔄 Data Pipeline\navalanche_medallion_pipeline\nCopyJob_1]
+
+    B --> C1
+    B --> C2
+
+    subgraph BRONZE ["🥉 BRONZE LAYER — OneLake Delta Tables"]
+        C1[📋 bronze_order_history\n25 rows · 8 columns]
+        C2[📋 bronze_shipping_logs\n25 rows · 7 columns]
+    end
+
+    C1 --> D
+    C2 --> D
+
+    subgraph SILVER ["🥈 SILVER LAYER — SQL Analytics Endpoint"]
+        D[🔗 silver_orders_shipping VIEW\n• Rename columns to snake_case\n• Strip $ from price columns\n• Cast data types\n• JOIN on order_id]
+    end
+
+    D --> E
+
+    subgraph GOLD ["🥇 GOLD LAYER — SQL Analytics Endpoint"]
+        E[📊 gold_product_order_summary VIEW\n• GROUP BY product_name + status\n• order_count · total_revenue\n• avg_order_value · date range]
+    end
+
+    E --> F
+    E --> G
+
+    subgraph CONSUME ["📊 CONSUME — Power BI"]
+        F[📈 Bar Chart\nRevenue by Product]
+        G[🍩 Donut Chart\nOrders by Status]
+        H[📋 Detail Table\nProduct · Carrier · Revenue]
+        F --- G --- H
+    end
+
+    E --> H
+
+    style BRONZE fill:#3b1f06,stroke:#d97706,color:#fbbf24
+    style SILVER fill:#083344,stroke:#0e7490,color:#67e8f9
+    style GOLD fill:#3b2f06,stroke:#a16207,color:#fde68a
+    style CONSUME fill:#1a0f2e,stroke:#7c3aed,color:#c4b5fd
+
+    style A1 fill:#1e293b,stroke:#475569,color:#94a3b8
+    style A2 fill:#1e293b,stroke:#475569,color:#94a3b8
+    style B fill:#1e293b,stroke:#475569,color:#94a3b8
+    style C1 fill:#1c1008,stroke:#92400e,color:#fbbf24
+    style C2 fill:#1c1008,stroke:#92400e,color:#fbbf24
+    style D fill:#0f1c1c,stroke:#0e7490,color:#67e8f9
+    style E fill:#1c1a08,stroke:#a16207,color:#eab308
+    style F fill:#1a0f2e,stroke:#7c3aed,color:#c4b5fd
+    style G fill:#1a0f2e,stroke:#7c3aed,color:#c4b5fd
+    style H fill:#1a0f2e,stroke:#7c3aed,color:#c4b5fd

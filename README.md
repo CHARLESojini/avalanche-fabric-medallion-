@@ -12,39 +12,43 @@ Avalanche needed visibility into **product revenue** and **delivery performance*
 
 ## 🏗️ Architecture
 
-```
-[Google Drive CSVs]
-        │
-        ▼
-[Data Pipeline — CopyJob]
-        │
-        ▼
-🥉 BRONZE LAYER — OneLake Delta Tables
-   ├── dbo.bronze_order_history
-   └── dbo.bronze_shipping_logs
-        │
-        ▼
-🥈 SILVER LAYER — SQL View (SQL Analytics Endpoint)
-   └── dbo.silver_orders_shipping
-       • Renamed columns to snake_case
-       • Stripped $ signs from price columns
-       • Cast data types (FLOAT, DATE, INT)
-       • Joined order history + shipping logs on order_id
-        │
-        ▼
-🥇 GOLD LAYER — SQL View (SQL Analytics Endpoint)
-   └── dbo.gold_product_order_summary
-       • Aggregated by product_name and delivery status
-       • Metrics: order_count, total_revenue, avg_order_value
-       • Date range: first_order_date, last_order_date
-        │
-        ▼
-📊 CONSUME — Power BI Report
-   └── Avalanche_Analytics_Report
-       • Bar chart: Revenue by product
-       • Donut chart: Orders by delivery status
-       • Detail table: Product, carrier, total price
-       • Total revenue: $9,369.65
+```mermaid
+flowchart TD
+    A1[📁 order-history.csv\nGoogle Drive] --> B
+    A2[📁 shipping-logs.csv\nGoogle Drive] --> B
+
+    B[🔄 Data Pipeline\navalanche_medallion_pipeline\nCopyJob_1]
+
+    B --> C1
+    B --> C2
+
+    subgraph BRONZE ["🥉 BRONZE LAYER — OneLake Delta Tables"]
+        C1[📋 bronze_order_history\n25 rows · 8 columns]
+        C2[📋 bronze_shipping_logs\n25 rows · 7 columns]
+    end
+
+    C1 --> D
+    C2 --> D
+
+    subgraph SILVER ["🥈 SILVER LAYER — SQL Analytics Endpoint"]
+        D[🔗 silver_orders_shipping VIEW\n• Rename columns to snake_case\n• Strip $ from price columns\n• Cast data types\n• JOIN on order_id]
+    end
+
+    D --> E
+
+    subgraph GOLD ["🥇 GOLD LAYER — SQL Analytics Endpoint"]
+        E[📊 gold_product_order_summary VIEW\n• GROUP BY product_name + status\n• order_count · total_revenue\n• avg_order_value · date range]
+    end
+
+    E --> F
+    E --> G
+    E --> H
+
+    subgraph CONSUME ["📊 CONSUME — Power BI"]
+        F[📈 Bar Chart\nRevenue by Product]
+        G[🍩 Donut Chart\nOrders by Status]
+        H[📋 Detail Table\nProduct · Carrier · Revenue]
+    end
 ```
 
 ---
