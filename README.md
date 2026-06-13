@@ -53,6 +53,31 @@ flowchart TD
 
 ---
 
+## 📸 Screenshots
+
+### Workspace Overview
+![Workspace Overview](screenshots/01_workspace_overview.png)
+
+### Bronze Layer — CopyJob Success
+![Bronze CopyJob Success](screenshots/02_bronze_copyjob_success.png)
+
+### Bronze Layer — Table Preview
+![Bronze Table Preview](screenshots/03_bronze_table_preview.png)
+
+### Silver Layer — SQL View
+![Silver SQL View](screenshots/04_silver_sql_view.png)
+
+### Gold Layer — SQL View
+![Gold SQL View](screenshots/05_gold_sql_view.png)
+
+### Gold Layer — Query Results
+![Gold Query Results](screenshots/06_gold_query_results.png)
+
+### Power BI Report — Avalanche Analytics
+![Power BI Report](screenshots/07_power_bi_report.png)
+
+---
+
 ## 📂 Data Sources
 
 | File | Description | Rows |
